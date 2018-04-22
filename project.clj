@@ -5,8 +5,9 @@
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.8.0"],
                  [org.clojure/java.jdbc "0.7.5"],
-                 [org.postgresql/postgresql "42.2.2"]]
-  :main ^:skip-aot microblog.core
+                 [org.postgresql/postgresql "42.2.2"]
+                 [http-kit "2.3.0"]]
+  :main ^:skip-aot microblog.web
   :uberjar-name "microblog-standalone.jar"
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
