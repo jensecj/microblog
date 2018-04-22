@@ -7,5 +7,6 @@
                  [org.clojure/java.jdbc "0.7.5"],
                  [org.postgresql/postgresql "42.2.2"]]
   :main ^:skip-aot microblog.core
+  :uberjar-name "microblog-standalone.jar"
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
