@@ -10,9 +10,9 @@
   (view/index (model/all)))
 
 (defn create [post]
-  (when-not (str/blank? post)
-    (model/create post)
-    (ring/redirect "/")))
+  (if (not (str/blank? post))
+    (model/create post))
+  (ring/redirect "/"))
 
 (defroutes routes
   (GET "/" [] (index))
