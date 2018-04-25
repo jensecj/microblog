@@ -31,9 +31,7 @@
        (layout/simple "register")))
 
 (defroutes app-routes
-  (route/resources "/")
   ;; (GET "/" [:as req] (index))
-
   auth-routes
   posts/routes
 
@@ -41,10 +39,10 @@
        (layout/simple "dashboard"))
   (GET "/users/:user" [user :as req]
        (layout/simple (format "<h1>all posts of %s!</h1>" user)))
-  ;; (ANY "*" []
+  ;; (ANY "*" []>
   ;;      (route/not-found (slurp (io/resource "public/404.html"))))
-  (ANY "*" []
-       (route/not-found (layout/not-found)))
+  (route/resources "/")
+  (route/not-found (layout/not-found))
   )
 
 (defn app []
