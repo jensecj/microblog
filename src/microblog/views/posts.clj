@@ -1,29 +1,23 @@
 (ns microblog.views.posts
   (:require
-   [microblog.views.layout :as layout]
    [hiccup2.core :as h]
    [hiccup.form :as form]
    [ring.util.anti-forgery :as anti-forgery]
-   ))
+   [microblog.views.layout :as layout]))
 
 (defn blog-form []
-  (form/form-to
-   [:post "/"]
-   [:div {:id "blog-form" :class "form-group col-10"}
+  [:div {:id "post-form" :class "form-group col-xs-12 col-sm-10 col-md-10 col-lg-8"}
+   (form/form-to
+    [:post "/"]
     (anti-forgery/anti-forgery-field)
-    ;; (form/text-area "blog-content")
-    [:textarea {:id "blog-content" :class "form-control" :rows "4"}]
-
-    ;; (form/submit-button "post this")
-    [:input {:type "submit" :class "btn btn-primary btn-lg float-right m-2" :value "post this"}]
-    ]
-   )
-  )
+    [:textarea {:name "post" :class "form-control" :rows "4"}]
+    [:input {:type "submit" :class "btn btn-primary btn-lg float-right m-1" :value "submit"}])])
 
 (defn display-posts [posts]
   [:div {:class "posts col-6"}
    (map
-    (fn [post] [:h2 {:class "post"} (h/html (:body post))])
+    (fn [post] [:div {:class "mb-0 post"}
+                [:p (h/html (:body post))]])
     posts)])
 
 (defn index [posts]
