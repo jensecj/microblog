@@ -15,7 +15,8 @@
 
 
 (defn create-server []
-  (s/run-server handler {:port 8080}))
+  (s/run-server
+   (m/remove-trailing-slashes (app)) {:port 8082}))
 
 (defn stop-server [server]
   (server :timeout 10))
