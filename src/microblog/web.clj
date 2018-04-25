@@ -6,6 +6,7 @@
    [compojure.route :as route]
    [hiccup2.core :as h]
    [hiccup.page :refer [html5]]
+   [ring.middleware.defaults :refer :all]
 
    [microblog.middleware :as m]
    [microblog.controllers.posts :as posts]
@@ -47,11 +48,13 @@
   )
 
 (defn app []
-  (-> app-routes))
+  (wrap-defaults
+   app-routes
+   site-defaults))
 
 (defn create-server []
   (s/run-server
-   (m/remove-trailing-slashes (app)) {:port 8082}))
+   (m/remove-trailing-slashes (app)) {:port 8080}))
 
 (defn stop-server [server]
   (server :timeout 10))
