@@ -6,17 +6,18 @@
   (html5
    [:head
     [:meta {:charset "utf-8"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1"}]
+    [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"}]
     [:title title]
     (include-css
-     "/css/reset.css"
-     "/css/bootstrap.css"
+     "/css/bootswatch-flatly.min.css"
      "/css/style.css")]
    [:body
-    [:div {:id "header"}
-     [:h1 {:class "container"} "microblog"]]
-    [:div {:id "content" :class "container"} body]
-    [:div {:id "footer"}]]))
+    [:div {:class "container"}
+     [:div {:id "header" :class "pb-5"} [:h1  "microblog"]]
+     [:div {:id "content"} body]
+     [:div {:id "footer"} "footer"]
+     ]
+    ]))
 
 (defn simple [content]
   (common "microblog web app" content))
