@@ -59,6 +59,7 @@
 
 (defn -main []
   (try
+    (schema/migrate)
     (def server (create-server))
     (catch Exception e (str "something exceptional occured: " (.getMessage e)))
     (finally (stop-server server))))
