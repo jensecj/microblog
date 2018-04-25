@@ -9,22 +9,29 @@
    :user "postgres"
    :password "secretpw"})
 
-(db/execute! pg-db
-             (db/drop-table-ddl :cities))
+(defn get-by-name [db username]
+  (db/query pg-db ["SELECT * FROM users WHERE username = ?" username]))
 
-(db/execute! pg-db
-             (db/create-table-ddl
-              :cities
-              [[:name :text]]))
+(defn get-by-id [db id]
+  db/query pg-db ["SELECT * FROM users WHERE id = ?" id])
 
-(db/insert! pg-db
-            :cities {:name "Copenhagen"})
+(defn add-user [db username password-hash]
+  (db/insert! pg-db
+              :users {:username username, :password password-hash}))
 
-(db/insert-multi! pg-db
-                  :cities
-                  [{:name "Aarhus"}
-                   {:name "New York"}])
+(defn -main []
+  ;; users-down
+  (db/execute! pg-db
+               (db/drop-table-ddl :users))
 
-(let [cities (db/query pg-db
-                       ["select * from cities"])]
-  (println cities))
+  ;; users-up
+  (db/execute! pg-db
+               (db/create-table-ddl
+                :users
+                [[:username :text]]))
+  ;; users-add
+  (db/insert! pg-db
+              :users {:username "jens"})
+
+  ;; users-get-by-name
+  (get-user-by-name pg-db "jens"))
