@@ -46,9 +46,8 @@
   )
 
 (defn app []
-  (wrap-defaults
-   app-routes
-   site-defaults))
+  (-> app-routes
+      (wrap-defaults site-defaults)))
 
 (defn create-server []
   (s/run-server
