@@ -13,5 +13,9 @@
   (into []
         (db/query spec ["SELECT * FROM posts ORDER BY ID DESC"])))
 
+(defn paginate [offset]
+  (into []
+        (db/query spec ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT 3" offset])))
+
 (defn create [post]
   (db/insert! spec :posts [:body] [post]))

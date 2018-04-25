@@ -15,18 +15,21 @@
      [:input {:type "submit" :class "btn btn-primary btn-lg float-right m-1" :value "submit"}])]])
 
 (defn render-posts [posts]
-  [:div {:class "posts col-10 col-lg-6 mx-auto"}
+  [:div {:class "posts col-sm-10 col-md-9 col-lg-6 mx-auto"}
    (map
     (fn [post]
       [:div {:class "card mb-2"}
        [:div {:class "post card-body"}
-        [:image {:src "http://via.placeholder.com/100x100" :class "float-left mr-3"}]
-        [:div {:class "card-title d-flex w-80 justify-content-between" :height 30}
-         [:h4 {:class "card-title text-muted"} "@username"]
-         [:small {:class "text-muted"} (h/html (subs (str (:created_at post)) 0 10))]]
-        [:div {:class "clear"}]
-        [:p {:class "card-text"} (h/html (:body post))]
-        [:a {:href "#" :class "card-link float-right"} "like &#128077;"]]])
+        [:div {:class "row"}
+         [:div {:class "col-3"}
+          [:image {:src "http://via.placeholder.com/100x100" :class ""}]]
+         [:div {:class "col-9 pr-1"}
+          [:div {:class "card-title d-flex w-80 justify-content-between" :height 30}
+           [:h4 {:class "card-title text-muted"} "@username"]
+           [:small {:class "text-muted"} (h/html (subs (str (:created_at post)) 0 10))]]
+          [:p {:class "card-text"} (h/html (:body post))]
+          [:a {:href "#" :class "card-link float-right"} "like &#128077;"]
+          [:a {:href "#" :class "card-link float-left ml-0"} "↺ follow"]]]]])
     posts)])
 
 (defn index [posts]
