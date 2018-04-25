@@ -31,7 +31,6 @@
        (layout/simple "register")))
 
 (defroutes app-routes
-  ;; (GET "/" [:as req] (index))
   auth-routes
   posts/routes
 
@@ -39,31 +38,25 @@
        (layout/simple "dashboard"))
   (GET "/users/:user" [user :as req]
        (layout/simple (format "<h1>all posts of %s!</h1>" user)))
-  ;; (ANY "*" []>
-  ;;      (route/not-found (slurp (io/resource "public/404.html"))))
   (route/resources "/")
-  (route/not-found (layout/not-found))
-  )
+  (route/not-found (layout/not-found)))
 
-(defn app []
+(def app
   (-> app-routes
+      (m/remove-trailing-slashes)
       (wrap-defaults site-defaults)))
 
-(defn create-server []
-  (s/run-server
-   (m/remove-trailing-slashes (app)) {:port 8080}))
+(defonce server (atom nil))
 
-(defn stop-server [server]
-  (server :timeout 10))
+(defn stop-server []
+  (when-not (nil? server)
+    (@server :timeout 100)
+    (reset! server nil)))
+
+(defn start-server []
+  (reset! server
+          (s/run-server app {:port 8080})))
 
 (defn -main []
-  (try
-    (schema/migrate)
-    (def server (create-server))
-    (catch Exception e (str "something exceptional occured: " (.getMessage e)))
-    (finally (stop-server server))))
-
-;; repl-driven development
-(try
-  (stop-server server)
-  (def server (create-server)))
+  (schema/migrate)
+  (start-server))
