@@ -10,9 +10,8 @@
     [:title title]
     (include-css
      "/css/reset.css"
-     "/css/base.css"
-     "/css/skeleton.css"
-     "/css/screen.css")]
+     "/css/bootstrap.css"
+     "/css/style.css")]
    [:body
     [:div {:id "header"}
      [:h1 {:class "container"} "microblog"]]

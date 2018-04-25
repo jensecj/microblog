@@ -30,6 +30,7 @@
        (layout/simple "register")))
 
 (defroutes app-routes
+  (route/resources "/")
   ;; (GET "/" [:as req] (index))
 
   auth-routes
@@ -46,7 +47,7 @@
   )
 
 (defn app []
-  app-routes)
+  (-> app-routes))
 
 (defn create-server []
   (s/run-server
