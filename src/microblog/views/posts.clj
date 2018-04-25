@@ -6,18 +6,23 @@
    [microblog.views.layout :as layout]))
 
 (defn blog-form []
-  [:div {:id "post-form" :class "form-group col-xs-12 col-sm-10 col-md-10 col-lg-8"}
+  [:div {:id "post-form" :class "form-group mx-auto col-xs-12 col-sm-10 col-md-10 col-lg-8"}
    (form/form-to
     [:post "/"]
     (anti-forgery/anti-forgery-field)
     [:textarea {:name "post" :class "form-control" :rows "4"}]
     [:input {:type "submit" :class "btn btn-primary btn-lg float-right m-1" :value "submit"}])])
 
-(defn display-posts [posts]
-  [:div {:class "posts col-6"}
+(defn render-posts [posts]
+  [:div {:class "posts col-8 col-lg-6 mx-auto"}
    (map
-    (fn [post] [:div {:class "mb-0 post"}
-                [:p (h/html (:body post))]])
+    (fn [post]
+      [:div {:class "card m-2"}
+       [:div {:class "post card-body m-2"}
+        [:h4 {:class "card-title mb-2"} "Display Name"]
+        [:h6 {:class "card-subtitle mb-4 text-muted"} "@username"]
+        [:p {:class "card-text"} (h/html (:body post))]
+        [:a {:href "#" :class "card-link float-right"} "like"]]])
     posts)])
 
 (defn index [posts]
@@ -29,4 +34,4 @@
      ]
     ]
    [:div {:class "clear"}]
-   (display-posts posts)))
+   (render-posts posts)))
