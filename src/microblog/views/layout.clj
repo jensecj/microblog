@@ -13,7 +13,7 @@
      "/css/style.css")]
    [:body
     [:div {:class "container"}
-     [:div {:id "header" :class "pb-5"} [:h1  "microblog"]]
+     [:div {:id "header" :class "pb-5"} [:a {:href "/"} [:h1 "microblog"]]]
      [:div {:id "content"} body]
      [:div {:id "footer"} "footer"]
      ]
