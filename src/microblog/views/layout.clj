@@ -22,7 +22,7 @@
 (defn simple [content]
   (common "microblog web app" content))
 
-(defn four-oh-four []
+(defn not-found []
   (common "Page Not Found"
-          [:div {:id "four-oh-four"}
-           "The page you requested could not be found"]))
+          [:div {:id "not-found"}
+           "404: not found"]))

@@ -1,4 +1,4 @@
 (ns microblog.views.posts)
 
-(defn index []
+(defn index [posts]
   )
