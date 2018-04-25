@@ -34,4 +34,4 @@
               :users {:username "jens"})
 
   ;; users-get-by-name
-  (get-user-by-name pg-db "jens"))
+  (get-by-name pg-db "jens"))
