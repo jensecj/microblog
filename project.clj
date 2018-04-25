@@ -8,11 +8,14 @@
                  [org.postgresql/postgresql "42.2.2"] ;; database
                  [ring/ring-core "1.6.3"] ;; ring framework
                  [ring/ring-devel "1.6.3"] ;; more ring
-                 [ring/ring-defaults "0.3.1"] ;; good defaults for ring
+                 [ring/ring-defaults "0.3.1"] ;; good default middleware
                  [ring/ring-anti-forgery "1.2.0"] ;; middleware for CSRF prevention
                  [http-kit "2.3.0"] ;; server
                  [compojure "1.6.1"] ;; routing
                  [hiccup "2.0.0-alpha1"]] ;; html rendering
+  :plugins [[lein-ring "0.12.4"]]
+  :ring {:handler microblog.web/app
+         :init microblog.models.migration/migrate}
   :main ^:skip-aot microblog.web
   :uberjar-name "microblog-standalone.jar"
   :target-path "target/%s"
