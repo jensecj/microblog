@@ -11,7 +11,7 @@
   (view/index (model/all)))
 
 (defn page [page]
-  (view/index (model/paginate page)))
+  (view/paged-index (model/paginate page) page))
 
 (defn create [post]
   (if (not (str/blank? post))

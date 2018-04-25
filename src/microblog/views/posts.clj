@@ -32,9 +32,33 @@
           [:a {:href "#" :class "card-link float-left ml-0"} "↺ follow"]]]]])
     posts)])
 
+(defn render-pagination [offset]
+  [:div {:class "container mt-3"}
+   [:div {:class "d-flex w-80 justify-content-center"}
+    [:ul {:class "pagination pagination-lg"}
+     (if (= offset 0)
+       [:li {:class "page-item disabled"} [:a {:class "page-link"} "&laquo;"]]
+       [:li {:class "page-item"}
+        [:a {:class "page-link" :href (format "/%s" (str (- offset 1)))} "&laquo;"]]  )
+     [:li {:class "page-item"}
+      [:a {:class "page-link" :href (format "/%s" (str (+ offset 1)))} "&raquo;"]]]]])
+
 (defn index [posts]
   (layout/common
    "microblog - index"
    (blog-form)
    [:div {:class "clear"}]
-   (render-posts posts)))
+   (render-posts posts)
+   [:div {:class "clear"}]
+   (render-pagination 0)))
+
+(defn paged-index [posts offset]
+  (layout/common
+   (if (= offset 0)
+     "microblog - index"
+     (format "microblog - page %s" offset))
+   (blog-form)
+   [:div {:class "clear"}]
+   (render-posts posts)
+   [:div {:class "clear"}]
+   (render-pagination offset)))
