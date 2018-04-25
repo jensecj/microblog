@@ -1,0 +1,1 @@
+(ns microblog.views.posts)

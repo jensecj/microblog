@@ -1,0 +1,1 @@
+(ns microblog.models.post)
