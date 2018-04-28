@@ -10,6 +10,8 @@
    [ring.middleware.defaults :refer :all]
    [clj-http.client :as client]
    [taoensso.timbre :as log]
+   [mount.core :as mount]
+   [mount.core :refer [defstate]]
    [microblog.frontend.middleware :as m]
    [microblog.frontend.controllers.posts :as posts]
    [microblog.frontend.views.layout :as layout])
@@ -58,8 +60,18 @@
 
 (defn start-server []
   (reset! server
-          (s/run-server app config)))
+          (s/run-server #'app config)))
 
-(defn -main []
-  (log/info (format "frontend running: %s" config))
-  (start-server))
+(defstate Webserver
+  :start (do
+           (log/info "starting webserver component")
+           (log/info (format "frontend is running: %s" config))
+           (start-server))
+  :stop (do
+          (log/info "stopping webserver component")
+          (stop-server)))
+
+(defn -main [& args]
+  ;; (log/info (format "frontend running: %s" config))
+  ;; (start-server)
+  (mount/start))
