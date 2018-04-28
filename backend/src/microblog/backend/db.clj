@@ -1,6 +1,9 @@
 (ns microblog.backend.db
-  (:require [clojure.java.jdbc :as db]
-            [environ.core :refer [env]]))
+  (:require
+   [clojure.java.jdbc :as db]
+   [environ.core :refer [env]]
+   [mount.core :refer [defstate]]
+   ))
 
 (def spec
   {:dbtype "postgresql"
@@ -28,6 +31,12 @@
 (defn get-posts-by-page [page]
   (into []
         (db/query spec ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT 3" (* page 3)])))
+
+(defstate Database
+  :start (do
+           (println "starting database component")
+           (println (format "backend connecting to database with: %s" spec)))
+  :stop (println "stopping database component"))
 
 (defn -main []
   (comment

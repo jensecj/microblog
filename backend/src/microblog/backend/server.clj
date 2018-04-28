@@ -5,7 +5,10 @@
    [compojure.api.sweet :refer :all]
    [ring.util.http-response :refer :all]
    [schema.core :as s]
+   [mount.core :as mount]
+   [mount.core :refer [defstate]]
    [microblog.backend.db :as db]
+   [microblog.backend.db :refer [Database]]
    )
   (:gen-class))
 
@@ -57,7 +60,14 @@
   (when-not (nil? @server)
     (@server :timeout 100)))
 
+(defstate Server
+  :start (do
+           (println "starting server component")
+           (println (format "backend is running: %s" config))
+           (start-server))
+  :stop (do
+          (println "stopping server component")
+          (stop-server)))
+
 (defn -main [& args]
-  (println (format "backend connecting to database with: %s" db/spec))
-  (println (format "backend is running: %s" config))
-  (start-server))
+  (mount/start))
