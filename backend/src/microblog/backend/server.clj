@@ -47,7 +47,8 @@
    (ANY "*" [] (not-found {:message "invalid request"}))))
 
 (defonce server (atom nil))
-(def config {:port 8000})
+(def config {:host (env :microblog-api-url)
+             :port (read-string (env :microblog-api-port))})
 
 (defn start-server []
   (reset! server (serv/run-server #'app config)))
@@ -57,5 +58,6 @@
     (@server :timeout 100)))
 
 (defn -main [& args]
-  (println (format "listening on localhost:%s" db/spec))
+  (println (format "backend connecting to database with: %s" db/spec))
+  (println (format "backend is running: %s" config))
   (start-server))

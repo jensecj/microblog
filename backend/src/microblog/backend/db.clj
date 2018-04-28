@@ -4,11 +4,11 @@
 
 (def spec
   {:dbtype "postgresql"
-   :dbname "testdb"
-   :host (env :database-url "localhost")
-   :port (env :database-port 5432)
-   :user "secretuser"
-   :password "secretpw"})
+   :dbname (env :microblog-database-name)
+   :host (env :microblog-database-url)
+   :port (read-string (env :microblog-database-port))
+   :user (env :microblog-database-user)
+   :password (env :microblog-database-password)})
 
 (def docker-spec
   {:dbtype "postgresql"

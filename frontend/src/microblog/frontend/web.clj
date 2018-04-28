@@ -46,7 +46,7 @@
       (wrap-defaults site-defaults)))
 
 (defonce server (atom nil))
-(def config {:port 3001})
+(def config {:port (read-string (env :microblog-port))})
 
 (defn stop-server []
   (when-not (nil? server)
