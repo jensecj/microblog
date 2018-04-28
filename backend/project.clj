@@ -9,7 +9,7 @@
                  [com.taoensso/timbre "4.10.0"]
                  [mount "0.1.12"]
                  [http-kit "2.3.0"]
-                 [migratus "1.0.6"]
+                 [migratus "1.0.6"] [com.fzakaria/slf4j-timbre "0.3.2"]
                  [com.layerware/hugsql "0.4.8"]
                  [org.postgresql/postgresql "42.2.2"]
                  [metosin/compojure-api "2.0.0-alpha19"]

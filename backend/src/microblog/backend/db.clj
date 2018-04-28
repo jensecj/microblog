@@ -3,49 +3,35 @@
    [clojure.java.jdbc :as db]
    [environ.core :refer [env]]
    [mount.core :refer [defstate]]
+   [microblog.backend.connectionpool :refer [ConnectionPool]]
+   [microblog.backend.migrations :refer [Migrate]]
    ))
 
-(def spec
-  {:dbtype "postgresql"
-   :dbname (env :microblog-database-name)
-   :host (env :microblog-database-url)
-   :port (read-string (env :microblog-database-port))
-   :user (env :microblog-database-user)
-   :password (env :microblog-database-password)})
-
-(def docker-spec
-  {:dbtype "postgresql"
-   :dbname (env :microblog-db-env-postgres-db)
-   :host (env :microblog-db-port-5432-tcp-addr)
-   :port (env :microblog-db-port-5432-tcp-port)
-   :user (env :microblog-db-env-postgres-user)
-   :password (env :microblog-db-env-postgres-password)})
-
 (defn add-post [post]
-  (db/insert! spec :posts [:body] [post]))
+  (db/insert! ConnectionPool :posts [:body] [post]))
 
 (defn get-all-posts []
   (into []
-        (db/query spec ["SELECT * FROM posts ORDER BY ID DESC"])))
+        (db/query ConnectionPool ["SELECT * FROM posts ORDER BY ID DESC"])))
 
 (defn get-posts-by-page [page]
   (into []
-        (db/query spec ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT 3" (* page 3)])))
+        (db/query ConnectionPool ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT 3" (* page 3)])))
 
 (defstate Database
   :start (do
            (println "starting database component")
-           (println (format "backend connecting to database with: %s" spec)))
+           (println (format "backend connecting to database: %s" ConnectionPool)))
   :stop (println "stopping database component"))
 
 (defn -main []
   (comment
     ;; posts-down
-    (db/execute! spec
+    (db/execute! ConnectionPool
                  (db/drop-table-ddl :posts))
 
     ;; posts-up
-    (db/db-do-commands spec
+    (db/db-do-commands ConnectionPool
                        (db/create-table-ddl
                         :posts
                         [
