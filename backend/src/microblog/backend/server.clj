@@ -33,7 +33,7 @@
                 :return {:result [Post]}
                 (ok {:result (db/get-posts-by-page p)}))
            (POST "/post" []
-                 :query-params [post :- s/Str]
+                 :body-params [post :- s/Str]
                  (db/add-post post))
            ))
 

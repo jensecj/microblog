@@ -9,6 +9,5 @@
 
 (defn create [post]
   (client/post "http://localhost:3000/api/post"
-               {:form-params {:post (:post post)}})
-  {:status 200}
-  )
+               {:content-type :json
+                :body (format "{\"post\":\"%s\"}" post)}))
