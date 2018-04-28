@@ -28,18 +28,18 @@
 (defn -main []
   (comment
     ;; posts-down
-    (db/execute! ConnectionPool
-                 (db/drop-table-ddl :posts))
+    ;; (db/execute! ConnectionPool
+    ;;              (db/drop-table-ddl :posts))
 
     ;; posts-up
-    (db/db-do-commands ConnectionPool
-                       (db/create-table-ddl
-                        :posts
-                        [
-                         [:id :serial "PRIMARY KEY"]
-                         [:body :varchar "NOT NULL"]
-                         [:created_at :timestamp "NOT NULL" "DEFAULT CURRENT_TIMESTAMP"]
-                         ]))
+    ;; (db/db-do-commands ConnectionPool
+    ;;                    (db/create-table-ddl
+    ;;                     :posts
+    ;;                     [
+    ;;                      [:id :serial "PRIMARY KEY"]
+    ;;                      [:body :varchar "NOT NULL"]
+    ;;                      [:created_at :timestamp "NOT NULL" "DEFAULT CURRENT_TIMESTAMP"]
+    ;;                      ]))
 
     (add-post "and then there was more")
     (get-all-posts)

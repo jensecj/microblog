@@ -7,7 +7,9 @@
    ))
 
 (def spec
-  {:dbtype "postgresql"
+  {:classname "org.postgresql.Driver"
+   :subprotocol "postgresql"
+   :dbtype "postgresql"
    :dbname (env :microblog-database-name)
    :host (env :microblog-database-url)
    :port (read-string (env :microblog-database-port))
