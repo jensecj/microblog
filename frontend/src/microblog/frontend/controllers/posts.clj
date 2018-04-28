@@ -1,11 +1,11 @@
-(ns microblog.controllers.posts
+(ns microblog.frontend.controllers.posts
   (:require
    [compojure.core :refer [defroutes GET POST]]
    [compojure.coercions :refer :all]
    [clojure.string :as str]
    [ring.util.response :as ring]
-   [microblog.views.posts :as view]
-   [microblog.models.post :as model]))
+   [microblog.frontend.views.posts :as view]
+   [microblog.frontend.models.post :as model]))
 
 (defn index []
   (view/index (model/all)))
@@ -19,6 +19,6 @@
   (ring/redirect "/"))
 
 (defroutes routes
-  (GET "/" [] (page 0))
+  (GET "/" [] (index))
   (GET "/:p" [p :<< as-int] (page p))
   (POST "/" [post] (create post)))

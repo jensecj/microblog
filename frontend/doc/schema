@@ -1,0 +1,18 @@
+user {
+    _id: int_64,
+    _password-hash: sha256? + salt,
+    username: string_21,
+    email: string_64,
+    profile-image: url,
+    profile-tagline: string_64
+}
+
+post {
+    _id: int_64,
+    _owner: user._id,
+    _timestamp: date,
+    content: string_200,
+    liked_by {
+        _id: [user._id]
+    },
+}

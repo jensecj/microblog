@@ -1,4 +1,4 @@
-(ns microblog.web
+(ns microblog.frontend.web
   (:require
    [clojure.java.io :as io]
    [org.httpkit.server :as s]
@@ -7,11 +7,10 @@
    [hiccup2.core :as h]
    [hiccup.page :refer [html5]]
    [ring.middleware.defaults :refer :all]
-
-   [microblog.middleware :as m]
-   [microblog.controllers.posts :as posts]
-   [microblog.views.layout :as layout]
-   [microblog.models.migration :as schema])
+   [clj-http.client :as client]
+   [microblog.frontend.middleware :as m]
+   [microblog.frontend.controllers.posts :as posts]
+   [microblog.frontend.views.layout :as layout])
   (:gen-class))
 
 (defn index []
@@ -47,6 +46,7 @@
       (wrap-defaults site-defaults)))
 
 (defonce server (atom nil))
+(def config {:port 3001})
 
 (defn stop-server []
   (when-not (nil? server)
@@ -55,8 +55,8 @@
 
 (defn start-server []
   (reset! server
-          (s/run-server app {:port 8080})))
+          (s/run-server app config)))
 
 (defn -main []
-  (schema/migrate)
+  (println (format "frontend running on port localhost:%s" (:port config)))
   (start-server))

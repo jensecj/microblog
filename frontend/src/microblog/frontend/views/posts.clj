@@ -1,9 +1,9 @@
-(ns microblog.views.posts
+(ns microblog.frontend.views.posts
   (:require
    [hiccup2.core :as h]
    [hiccup.form :as form]
    [ring.util.anti-forgery :as anti-forgery]
-   [microblog.views.layout :as layout]))
+   [microblog.frontend.views.layout :as layout]))
 
 (defn blog-form []
   [:div {:class "row"}

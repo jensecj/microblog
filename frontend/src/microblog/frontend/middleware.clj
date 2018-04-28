@@ -1,4 +1,4 @@
-(ns microblog.middleware)
+(ns microblog.frontend.middleware)
 
 (defn remove-trailing-slashes [handler]
   (fn [req]

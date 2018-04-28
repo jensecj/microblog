@@ -1,4 +1,4 @@
-(ns microblog.views.layout
+(ns microblog.frontend.views.layout
   (:require
    [hiccup.page :refer [html5 include-css]]))
 
