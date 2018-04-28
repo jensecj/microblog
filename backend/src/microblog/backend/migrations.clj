@@ -12,14 +12,14 @@
   false)
 
 (defn migrate []
-  (when (not (migrated?))
-    (def config
-      {:store         :database
-       :migration-dir "migrations/"
-       :db            ConnectionPool})
+  (def config
+    {:store         :database
+     :migration-dir "migrations/"
+     :db            ConnectionPool})
 
-    (log/info "migrating database")
-    (migratus/migrate config)))
+  (log/info "handling database migrations")
+  (migratus/migrate config))
+
 
 (defstate Migrate
   :start (do
