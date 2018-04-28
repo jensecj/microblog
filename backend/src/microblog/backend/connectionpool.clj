@@ -3,6 +3,7 @@
    [clojure.java.jdbc :as db]
    [environ.core :refer [env]]
    [mount.core :refer [defstate]]
+   [taoensso.timbre :as log]
    ))
 
 (def spec
@@ -41,7 +42,7 @@
 
 (defstate ConnectionPool
   :start (do
-           (println "starting database connection pool component")
+           (log/info "starting database connection pool component")
            spec ;; fake it for now
            )
-  :stop (println "stopping database connection pool component"))
+  :stop (log/info "stopping database connection pool component"))

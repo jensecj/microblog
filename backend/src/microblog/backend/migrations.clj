@@ -3,6 +3,7 @@
    [clojure.java.jdbc :as db]
    [environ.core :refer [env]]
    [mount.core :refer [defstate]]
+   [taoensso.timbre :as log]
    [migratus.core :as migratus]
    ))
 
@@ -21,12 +22,11 @@
   false)
 
 (defn migrate []
-  (when (not migrated?)
-    (println "migrating")))
-
+  (when (not (migrated?))
+    (log/info "migrating database")))
 
 (defstate Migrate
   :start (do
-           (println "starting database migration component")
+           (log/info "starting database migration component")
            (migrate))
-  :stop (println "stopping database migration component"))
+  :stop (log/info "stopping database migration component"))

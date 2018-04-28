@@ -7,6 +7,7 @@
    [schema.core :as s]
    [mount.core :as mount]
    [mount.core :refer [defstate]]
+   [taoensso.timbre :as log]
    [microblog.backend.db :as db]
    [microblog.backend.db :refer [Database]]
    )
@@ -62,11 +63,11 @@
 
 (defstate Server
   :start (do
-           (println "starting server component")
-           (println (format "backend is running: %s" config))
+           (log/info "starting server component")
+           (log/info (format "backend is running: %s" config))
            (start-server))
   :stop (do
-          (println "stopping server component")
+          (log/info "stopping server component")
           (stop-server)))
 
 (defn -main [& args]

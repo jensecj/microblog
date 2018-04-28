@@ -3,6 +3,7 @@
    [clojure.java.jdbc :as db]
    [environ.core :refer [env]]
    [mount.core :refer [defstate]]
+   [taoensso.timbre :as log]
    [microblog.backend.connectionpool :refer [ConnectionPool]]
    [microblog.backend.migrations :refer [Migrate]]
    ))
@@ -20,9 +21,9 @@
 
 (defstate Database
   :start (do
-           (println "starting database component")
-           (println (format "backend connecting to database: %s" ConnectionPool)))
-  :stop (println "stopping database component"))
+           (log/info "starting database component")
+           (log/info (format "backend connecting to database: %s" ConnectionPool)))
+  :stop (log/info "stopping database component"))
 
 (defn -main []
   (comment
@@ -45,10 +46,3 @@
     (get-posts-by-page 0)
     )
   )
-
-(defn- migrated? []
-  false)
-
-(defn migrate []
-  (when (not migrated?)
-    (println "migrating")))
