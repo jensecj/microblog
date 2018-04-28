@@ -9,11 +9,13 @@
                  [ring/ring-defaults "0.3.1"]
                  [ring/ring-anti-forgery "1.2.0"]
                  [com.taoensso/timbre "4.10.0"]
+                 [mount "0.1.12"]
                  [environ "1.1.0"]
                  [http-kit "2.3.0"]
                  [compojure "1.6.1"]
                  [hiccup "2.0.0-alpha1"]
                  [clj-http "3.8.0"]
+                 [cheshire "5.8.0"]
                  ]
   :plugins [[lein-ring "0.12.4"]]
   :ring {:handler microblog.frontend.web/app}
