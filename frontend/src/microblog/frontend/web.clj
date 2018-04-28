@@ -9,6 +9,7 @@
    [hiccup.page :refer [html5]]
    [ring.middleware.defaults :refer :all]
    [clj-http.client :as client]
+   [taoensso.timbre :as log]
    [microblog.frontend.middleware :as m]
    [microblog.frontend.controllers.posts :as posts]
    [microblog.frontend.views.layout :as layout])
@@ -47,7 +48,8 @@
       (wrap-defaults site-defaults)))
 
 (defonce server (atom nil))
-(def config {:port (read-string (env :microblog-port))})
+(def config {:host (env :microblog-url)
+             :port (read-string (env :microblog-port))})
 
 (defn stop-server []
   (when-not (nil? server)
@@ -59,5 +61,5 @@
           (s/run-server app config)))
 
 (defn -main []
-  (println (format "frontend running on port localhost:%s" (:port config)))
+  (log/info (format "frontend running: %s" config))
   (start-server))
