@@ -3,12 +3,13 @@
   :url ""
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
-                 [com.taoensso/timbre "4.10.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [ring/ring-core "1.6.3"]
                  [ring/ring-devel "1.6.3"]
                  [ring/ring-defaults "0.3.1"]
                  [ring/ring-anti-forgery "1.2.0"]
+                 [com.taoensso/timbre "4.10.0"]
+                 [environ "1.1.0"]
                  [http-kit "2.3.0"]
                  [compojure "1.6.1"]
                  [hiccup "2.0.0-alpha1"]

@@ -3,7 +3,7 @@
   :url ""
   :license {:name "MIT"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/java.jdbc "0.7.5"]
                  [environ "1.1.0"]
                  [com.taoensso/timbre "4.10.0"]
