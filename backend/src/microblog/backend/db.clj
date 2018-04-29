@@ -5,7 +5,18 @@
             [mount.core :refer [defstate]]
             [migratus.core :as migratus]
             [hugsql.core :as hugsql]
+            [schema.core :as s]
             [taoensso.timbre :as log]))
+
+(defn post-body? [post]
+  (and (s/validate s/Str post)
+       (<= (count post) 200)
+       (> (count post) 0)))
+
+(s/defschema Post
+  {:id s/Int
+   :body s/Str
+   :created_at s/Inst})
 
 (defn- migrate [connection]
   "Migrate the database using migratus"
@@ -29,7 +40,12 @@
   microblog.backend.dbprotocol/DbActions
 
   (add-post [this new-post]
-    (db/insert! connection :posts [:body] [new-post]))
+    (let [validation (s/check (s/pred post-body?) new-post)]
+      (if (= validation nil)
+        (db/insert! connection :posts [:body] [new-post])
+        ;; (bad-request (str validation))
+        ))
+    )
 
   (get-all-posts [this]
     (get-all-posts connection))

@@ -2,18 +2,13 @@
   (:gen-class)
   (:require [environ.core :refer [env]]
             [compojure.api.sweet :refer :all]
-            [microblog.backend.db :refer [Database]]
+            [microblog.backend.db :refer [Database Post]]
             [microblog.backend.dbprotocol :as db]
             [mount.core :as mount :refer [defstate]]
             [org.httpkit.server :as serv]
             [ring.util.http-response :refer :all]
             [schema.core :as s]
             [taoensso.timbre :as log]))
-
-(s/defschema Post
-  {:id s/Int
-   :body s/Str
-   :created_at s/Inst})
 
 (def api-routes
   (context "/api" []
@@ -32,8 +27,7 @@
     (POST "/post" []
       :body-params [post :- s/Str]
       (db/add-post Database post)
-      )
-    ))
+      )))
 
 (def app
   (api
@@ -49,7 +43,8 @@
    (ANY "*" [] (not-found {:message "invalid request"}))))
 
 (def config {:host (env :microblog-api-url)
-             :port (read-string (env :microblog-api-port))})
+             :port (read-string (env :microblog-api-port))
+             })
 
 (defstate Server
   :start (do
@@ -70,4 +65,5 @@
   (comment
     (reset)
     (mount/stop)
-    ))
+    )
+  )

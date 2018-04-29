@@ -1,10 +1,8 @@
 (ns microblog.backend.connectionpool
-  (:require
-   [clojure.java.jdbc :as db]
-   [environ.core :refer [env]]
-   [mount.core :refer [defstate]]
-   [taoensso.timbre :as log]
-   ))
+  (:require [environ.core :refer [env]]
+            [mount.core :refer [defstate]]
+            [hikari-cp.core :refer :all]
+            [taoensso.timbre :as log]))
 
 (def spec
   {:classname "org.postgresql.Driver"
@@ -33,9 +31,10 @@
    :max-lifetime       1800000
    :minimum-idle       10
    :maximum-pool-size  10
-   :register-mbeans    false
    :pool-name          "db-pool"
    :adapter            "postgresql"
+   :register-mbeans    false
+   ;; database settings
    :server-name(env :microblog-database-url)
    :database-name (env :microblog-database-name)
    :port-number (read-string (env :microblog-database-port))
@@ -45,6 +44,7 @@
 (defstate ConnectionPool
   :start (do
            (log/info "starting database connection pool component")
-           spec ;; fake it for now
-           )
-  :stop (log/info "stopping database connection pool component"))
+           {:datasource (make-datasource datasource-options)})
+  :stop (do
+          (log/info "stopping database connection pool component")
+          (close-datasource (:datasource ConnectionPool))))

@@ -14,6 +14,7 @@
                  [org.postgresql/postgresql "42.2.2"]
                  [metosin/compojure-api "2.0.0-alpha19"]
                  [prismatic/schema "1.1.9"]
+                 [hikari-cp "2.4.0"]
                  ]
   :plugins [[lein-ring "0.12.4"]
             [lein-environ "1.1.0"]]
