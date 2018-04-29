@@ -15,6 +15,8 @@
                  [metosin/compojure-api "2.0.0-alpha19"]
                  [prismatic/schema "1.1.9"]
                  [hikari-cp "2.4.0"]
+                 [ring/ring-mock "0.3.2"]
+                 [cheshire "5.8.0"]
                  ]
   :plugins [[lein-ring "0.12.4"]
             [lein-environ "1.1.0"]]
