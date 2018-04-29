@@ -45,33 +45,31 @@
   (route/not-found (layout/not-found)))
 
 (def app
-  (-> app-routes
+  (-> #'app-routes
       (m/remove-trailing-slashes)
       (wrap-defaults site-defaults)))
 
-(defonce server (atom nil))
 (def config {:host (env :microblog-url)
              :port (read-string (env :microblog-port))})
-
-(defn stop-server []
-  (when-not (nil? server)
-    (@server :timeout 100)
-    (reset! server nil)))
-
-(defn start-server []
-  (reset! server
-          (s/run-server #'app config)))
 
 (defstate Webserver
   :start (do
            (log/info "starting webserver component")
            (log/info (format "frontend is running: %s" config))
-           (start-server))
+           (s/run-server #'app config))
   :stop (do
           (log/info "stopping webserver component")
-          (stop-server)))
+          (Webserver :timeout 100)))
+
+(defn reset []
+  (mount/stop)
+  (mount/start))
+
+(comment
+  (mount/stop)
+  (mount/start)
+  (reset)
+  )
 
 (defn -main [& args]
-  ;; (log/info (format "frontend running: %s" config))
-  ;; (start-server)
   (mount/start))
