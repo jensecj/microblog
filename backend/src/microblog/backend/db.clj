@@ -36,23 +36,31 @@
 ;; the SQL from queries.sql
 (hugsql/def-db-fns "queries.sql")
 
+(defn- handle-add-post [connection new-post]
+  (let [validation (s/check (s/pred post-body?) new-post)]
+    (if (= validation nil)
+      (db/insert! connection :posts [:body] [new-post])
+      ;; (bad-request (str validation))
+      ))
+  )
+
+(defn- handle-get-all-posts [connection]
+  (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"])))
+
+(defn- handle-get-posts-by-offset [connection n offset]
+  (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
+
 (defrecord PostgreSQL-DB [connection]
   microblog.backend.dbprotocol/DbActions
 
   (add-post [this new-post]
-    (let [validation (s/check (s/pred post-body?) new-post)]
-      (if (= validation nil)
-        (db/insert! connection :posts [:body] [new-post])
-        ;; (bad-request (str validation))
-        ))
-    )
+    (handle-add-post connection new-post))
 
   (get-all-posts [this]
-    (get-all-posts connection))
+    (handle-get-all-posts connection))
 
   (get-posts-by-offset [this n offset]
-    (into []
-          (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
+    (handle-get-posts-by-offset connection n offset))
   )
 
 (defstate Database
