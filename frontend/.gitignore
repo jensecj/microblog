@@ -1,3 +1,4 @@
+/*.log
 /target
 /classes
 /checkouts
@@ -10,3 +11,6 @@ pom.xml.asc
 .hgignore
 .hg/
 /.envrc
+/*-init.clj
+/resources/public/js/compiled
+out
