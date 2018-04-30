@@ -1,6 +1,6 @@
-(ns microblog.backend.server-test
-  (:require [microblog.backend.server :as sut]
-            [microblog.backend.dbprotocol :as db-protocol]
+(ns backend.server-test
+  (:require [backend.server :as sut]
+            [backend.dbprotocol :as db-protocol]
             [clojure.test :as t :refer [deftest testing is]]
             [ring.mock.request :as mock]
             [cheshire.core :refer :all]))

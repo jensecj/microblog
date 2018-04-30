@@ -1,7 +1,7 @@
-(ns microblog.backend.db
+(ns backend.db
   (:require [clojure.java.jdbc :as db]
-            [microblog.backend.connectionpool :refer [ConnectionPool]]
-            [microblog.backend.dbprotocol :as dbprotocol]
+            [backend.connectionpool :refer [ConnectionPool]]
+            [backend.dbprotocol :as dbprotocol]
             [mount.core :refer [defstate]]
             [migratus.core :as migratus]
             [hugsql.core :as hugsql]
@@ -51,7 +51,7 @@
   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
 
 (defrecord PostgreSQL-DB [connection]
-  microblog.backend.dbprotocol/DbActions
+  backend.dbprotocol/DbActions
 
   (add-post [this new-post]
     (handle-add-post connection new-post))

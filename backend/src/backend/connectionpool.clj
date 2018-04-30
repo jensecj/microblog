@@ -1,4 +1,4 @@
-(ns microblog.backend.connectionpool
+(ns backend.connectionpool
   (:require [environ.core :refer [env]]
             [mount.core :refer [defstate]]
             [hikari-cp.core :refer :all]

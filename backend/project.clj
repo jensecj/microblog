@@ -1,4 +1,4 @@
-(defproject microblog.backend "0.1.0"
+(defproject backend "0.1.0"
   :description "backend for microblogging web app"
   :url ""
   :license {:name "MIT"
@@ -16,15 +16,17 @@
                  [prismatic/schema "1.1.9"]
                  [hikari-cp "2.4.0"]
                  [ring/ring-mock "0.3.2"]
+                 [ring-cors "0.1.12"]
                  [cheshire "5.8.0"]
+                 [buddy "2.0.0"]
                  ]
   :plugins [[lein-ring "0.12.4"]
             [lein-environ "1.1.0"]]
-  :ring {:handler microblog.backend.server/app
+  :ring {:handler backend.server/app
          :auto-reload? true
          :auto-refresh? true
          }
-  :main ^:skip-aot microblog.backend.server
+  :main ^:skip-aot backend.server
   :jvm-opts ["-Xmx1g"]
   :target-path "target/%s"
   :uberjar-name "microblog-backend-standalone.jar"
