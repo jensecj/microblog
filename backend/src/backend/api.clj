@@ -35,9 +35,15 @@
        {:rules [{:pattern #".*" :handler rule}]
         :on-error access-error})))
 
+;; easy :auth-rules for the api
 (defmethod restructure-param :auth-rules
   [_ rule acc]
   (update-in acc [:middleware] conj [wrap-rule rule]))
+
+;; grab the user sending the request, and bind it to :current-user
+(defmethod restructure-param :current-user
+  [_ binding acc]
+  (update-in acc [:letks] into [binding `(:identity ~'+compojure-api-request+)]))
 
 (defn authenticated? [req]
   (ba/authenticated? req))
@@ -57,10 +63,10 @@
         (if (authenticate-user db username password)
           (do
             (log/info "login success!")
-            (assoc-in (ok) [:session :identity] {:username (:username user)}))
+            (assoc-in (ok {}) [:session :identity] {:username (:username user)}))
           (do
             (log/info "login failed!")
-            (assoc-in (forbidden) [:session :identity] nil)))
+            (assoc-in (forbidden {}) [:session :identity] nil)))
         )
       )
 
@@ -72,7 +78,9 @@
 
     (POST "/new-post" []
       :summary "Add a new post"
+      :auth-rules authenticated?
       :body-params [post :- s/Str]
+      :current-user user
       (db/add-post db post))
     (GET "/all-posts" []
       :summary "Get all available posts"
@@ -83,6 +91,7 @@
       :summary "Get n posts, starting at offset"
       :query-params [num_posts :- s/Int, offset :- s/Int]
       :return {:result [Post]}
+      :auth-rules authenticated?
       (ok {:result (db/get-posts-by-offset db num_posts offset)}))
 
     ))
@@ -103,5 +112,6 @@
 (defn handler [db]
   (-> (app db)
       (wrap-cors :access-control-allow-origin [#"http://localhost:8080" #"http://localhost:3449"]
-                 :access-control-allow-methods [:get :post]))
+                 :access-control-allow-methods [:get :post]
+                 :access-control-allow-credentials true))
   )
