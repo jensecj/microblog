@@ -44,8 +44,6 @@
 
 ;; HANDLER
 
-(defn fake-user []
-  {:username "jens" :hash "bcrypt+sha512$39566145319119818b08070497a5e161$12$ba92e3006090e8e3bc1659599a90136a266773527cd92726"})
 (defn- api-routes [db]
   (context "/api" []
     :tags ["api"]
@@ -53,7 +51,7 @@
     (POST "/login" []
       :summary "logs a user in"
       :body-params [username :- s/Str, password :- s/Str]
-      (let [user (fake-user)]
+      (let [user (get-user-by-name db username)]
         (log/info "some tried to login! (" username "," password ")")
 
         (if (authenticate-user db username password)
