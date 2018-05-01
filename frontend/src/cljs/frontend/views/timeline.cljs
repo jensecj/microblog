@@ -23,7 +23,7 @@
            [:div {:class "post card-body"}
             [:div {:class "row"}
              [:div {:class "col-3"}
-              [:img {:src "http://via.placeholder.com/100x100" :class ""}]]
+              [:img {:src (:creator_avatar post) :width 100 :height 100 :class ""}]]
              [:div {:class "col-9 pr-1"}
               [:div {:class "card-title d-flex w-80 justify-content-between" :height 30}
                [:a {:href (str "#" (:id post)) }

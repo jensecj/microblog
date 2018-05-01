@@ -18,6 +18,7 @@
    :created_by s/Str
    :body s/Str
    :created_at s/Inst
+   :creator_avatar s/Str
    })
 
 (s/defschema InternalPost
@@ -30,7 +31,8 @@
 (s/defschema User
   {:id s/Int
    :username s/Str
-   :hash s/Str})
+   :hash s/Str
+   :avatar-url s/Str})
 
 (defn- migrate [connection]
   "Migrate the database using migratus"
@@ -55,11 +57,27 @@
   (let [username (:username (handle-get-user-by-id connection user_id))]
     username))
 
-(defn- change-post-created-by-id-to-name [connection post]
-  (let [user_id (:created_by post)]
+(defn- post-middleware-change-post-created-by-id-to-name [connection post]
+  (let [user_id (:created_by post)
+        username (:username (handle-get-user-by-id connection user_id))]
     (-> post
         (dissoc :created_by)
-        (assoc :created_by (user-id-to-name connection user_id)))))
+        (assoc :created_by username))))
+
+(defn- post-middleware-add-creator-avatar [connection post]
+  (let [user (handle-get-user-by-name connection (:username post))]
+    (assoc post :creator_avatar
+           (rand-nth '("http://www.avatarsdb.com/avatars/hidden_cat.jpg"
+                       "http://www.avatarsdb.com/avatars/dennis.jpg"
+                       "http://www.avatarsdb.com/avatars/funny_penguin.gif"
+                       "http://www.avatarsdb.com/avatars/playful_cat.gif"))))
+  )
+
+(defn- wrap-post [connection post]
+  (->> post
+       (post-middleware-change-post-created-by-id-to-name connection)
+       (post-middleware-add-creator-avatar connection)))
+
 
 ;; handlers
 (defn- handle-add-post [connection user new-post]
@@ -71,7 +89,8 @@
 
 (defn- handle-get-all-posts [connection]
   (let [raw-posts (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"]))]
-    (map (partial change-post-created-by-id-to-name connection) raw-posts)))
+    (map (partial wrap-post connection) raw-posts)))
+
 
 (defn- handle-get-posts-by-offset [connection n offset]
   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
