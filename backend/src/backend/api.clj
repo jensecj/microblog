@@ -17,6 +17,8 @@
 ;; API
 (defn get-user-by-name [db username]
   (db/get-user-by-name db username))
+(defn get-user-by-id [db user_id]
+  (db/get-user-by-id db user_id))
 
 (defn get-all-posts [db]
   (db/get-all-posts db))
@@ -71,27 +73,34 @@
       )
 
     (GET "/get-user-by-name" []
+      :auth-rules authenticated?
       :summary "Get a users record by username"
       :return {:result User}
       :query-params [username :- s/Str]
       (ok {:result (get-user-by-name db username)}))
+    (GET "/get-user-by-id" []
+      :auth-rules authenticated?
+      :summary "Get a users record by user id"
+      :return {:result User}
+      :query-params [user_id :- s/Int]
+      (ok {:result (get-user-by-id db user_id)}))
 
     (POST "/new-post" []
-      :summary "Add a new post"
       :auth-rules authenticated?
+      :summary "Add a new post"
       :body-params [post :- s/Str]
       :current-user user
-      (db/add-post db post))
+      (db/add-post db user post))
     (GET "/all-posts" []
       :summary "Get all available posts"
       :return {:result [Post]}
       :auth-rules authenticated?
       (ok {:result (get-all-posts db)}))
     (GET "/posts-by-offset" []
+      :auth-rules authenticated?
       :summary "Get n posts, starting at offset"
       :query-params [num_posts :- s/Int, offset :- s/Int]
       :return {:result [Post]}
-      :auth-rules authenticated?
       (ok {:result (db/get-posts-by-offset db num_posts offset)}))
 
     ))

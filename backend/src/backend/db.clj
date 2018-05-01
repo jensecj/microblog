@@ -15,11 +15,21 @@
 
 (s/defschema Post
   {:id s/Int
+   :created_by s/Str
    :body s/Str
-   :created_at s/Inst})
+   :created_at s/Inst
+   })
+
+(s/defschema InternalPost
+  {:id s/Int
+   :created_by s/Str
+   :body s/Str
+   :created_at s/Inst
+   })
 
 (s/defschema User
-  {:username s/Str
+  {:id s/Int
+   :username s/Str
    :hash s/Str})
 
 (defn- migrate [connection]
@@ -40,28 +50,44 @@
 ;; the SQL from queries.sql
 (hugsql/def-db-fns "queries.sql")
 
-(defn- handle-add-post [connection new-post]
+(defn- handle-add-post [connection user new-post]
   (let [validation (s/check (s/pred post-body?) new-post)]
     (if (= validation nil)
-      (db/insert! connection :posts [:body] [new-post])
+      (let [user (handle-get-user-by-name connection (:username user))]
+        (db/insert! connection :posts {:created_by (:id user)
+                                       :body new-post})
+        )
       ;; (bad-request (str validation))
-      ))
-  )
+      )))
+
+(defn- user-id-to-name [connection user_id]
+  (let [username (:username (handle-get-user-by-id connection user_id))]
+    username))
+
+(defn- change-post-created-by-id-to-name [connection post]
+  (let [user_id (:created_by post)]
+    (-> post
+        (dissoc :created_by)
+        (assoc :created_by (user-id-to-name connection user_id)))))
 
 (defn- handle-get-all-posts [connection]
-  (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"])))
+  (let [raw-posts (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"]))]
+    (map (partial change-post-created-by-id-to-name connection) raw-posts)))
 
 (defn- handle-get-posts-by-offset [connection n offset]
   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
 
+#dbg
 (defn- handle-get-user-by-name [connection username]
-  (first (db/query connection ["SELECT username,hash FROM users WHERE username = ?" username])))
+  (first (db/query connection ["SELECT username,hash,id FROM users WHERE username = ?" username])))
+(defn- handle-get-user-by-id [connection user_id]
+  (first (db/query connection ["SELECT username,hash,id FROM users WHERE id = ?" user_id])))
 
 (defrecord PostgreSQL-DB [connection]
   backend.dbprotocol/DbActions
 
-  (add-post [this new-post]
-    (handle-add-post connection new-post))
+  (add-post [this user new-post]
+    (handle-add-post connection user new-post))
 
   (get-all-posts [this]
     (handle-get-all-posts connection))
@@ -71,6 +97,8 @@
 
   (get-user-by-name [this username]
     (handle-get-user-by-name connection username))
+  (get-user-by-id [this user_id]
+    (handle-get-user-by-id connection user_id))
   )
 
 (defstate Database

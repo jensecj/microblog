@@ -27,8 +27,8 @@
              [:div {:class "col-9 pr-1"}
               [:div {:class "card-title d-flex w-80 justify-content-between" :height 30}
                [:a {:href (str "#" (:id post)) }
-                [:h4 {:class "card-title text-muted"} "@username"]]
-               [:small {:class "text-muted"} (:created_at post)]
+                [:h4 {:class "card-title text-muted"} (str "@" (:created_by post))]]
+               [:small {:class "text-muted"} (subs (:created_at post) 0 10)]
                ]
               [:p {:class "card-text"} (:body post)]
               [:a {:href "#" :class "card-link float-right"} "like"]]]]])
