@@ -29,6 +29,7 @@
    (prn "got some data: " data)
    {:http-xhrio {:method :post
                  :uri (str "http://localhost:3000/api/new-post")
+                 :with-credentials true
                  :params data
                  :timeout 5000
                  :format (ajax/json-request-format)

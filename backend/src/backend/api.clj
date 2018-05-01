@@ -113,5 +113,4 @@
   (-> (app db)
       (wrap-cors :access-control-allow-origin [#"http://localhost:8080" #"http://localhost:3449"]
                  :access-control-allow-methods [:get :post]
-                 :access-control-allow-credentials true))
-  )
+                 :access-control-allow-credentials true)))
