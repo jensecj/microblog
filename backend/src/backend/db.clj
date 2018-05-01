@@ -50,16 +50,7 @@
 ;; the SQL from queries.sql
 (hugsql/def-db-fns "queries.sql")
 
-(defn- handle-add-post [connection user new-post]
-  (let [validation (s/check (s/pred post-body?) new-post)]
-    (if (= validation nil)
-      (let [user (handle-get-user-by-name connection (:username user))]
-        (db/insert! connection :posts {:created_by (:id user)
-                                       :body new-post})
-        )
-      ;; (bad-request (str validation))
-      )))
-
+;; helpers
 (defn- user-id-to-name [connection user_id]
   (let [username (:username (handle-get-user-by-id connection user_id))]
     username))
@@ -70,6 +61,14 @@
         (dissoc :created_by)
         (assoc :created_by (user-id-to-name connection user_id)))))
 
+;; handlers
+(defn- handle-add-post [connection user new-post]
+  (let [validation (s/check (s/pred post-body?) new-post)]
+    (if (= validation nil)
+      (let [user (handle-get-user-by-name connection (:username user))]
+        (db/insert! connection :posts {:created_by (:id user)
+                                       :body new-post})))))
+
 (defn- handle-get-all-posts [connection]
   (let [raw-posts (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"]))]
     (map (partial change-post-created-by-id-to-name connection) raw-posts)))
@@ -77,11 +76,13 @@
 (defn- handle-get-posts-by-offset [connection n offset]
   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
 
-#dbg
 (defn- handle-get-user-by-name [connection username]
   (first (db/query connection ["SELECT username,hash,id FROM users WHERE username = ?" username])))
 (defn- handle-get-user-by-id [connection user_id]
   (first (db/query connection ["SELECT username,hash,id FROM users WHERE id = ?" user_id])))
+
+(defn handle-create-user [connection username hash]
+  (db/insert! connection :users {:username username :hash hash}))
 
 (defrecord PostgreSQL-DB [connection]
   backend.dbprotocol/DbActions
@@ -99,6 +100,9 @@
     (handle-get-user-by-name connection username))
   (get-user-by-id [this user_id]
     (handle-get-user-by-id connection user_id))
+
+  (create-user [this username hash]
+    (handle-create-user connection username hash))
   )
 
 (defstate Database
