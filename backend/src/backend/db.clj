@@ -18,6 +18,10 @@
    :body s/Str
    :created_at s/Inst})
 
+(s/defschema User
+  {:username s/Str
+   :hash s/Str})
+
 (defn- migrate [connection]
   "Migrate the database using migratus"
 
@@ -50,6 +54,9 @@
 (defn- handle-get-posts-by-offset [connection n offset]
   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
 
+(defn- handle-get-user-by-name [connection username]
+  (first (db/query connection ["SELECT username,hash FROM users WHERE username = ?" username])))
+
 (defrecord PostgreSQL-DB [connection]
   backend.dbprotocol/DbActions
 
@@ -61,6 +68,9 @@
 
   (get-posts-by-offset [this n offset]
     (handle-get-posts-by-offset connection n offset))
+
+  (get-user-by-name [this username]
+    (handle-get-user-by-name connection username))
   )
 
 (defstate Database
