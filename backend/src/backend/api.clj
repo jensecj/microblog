@@ -14,20 +14,27 @@
             [buddy.auth.accessrules :as baa]
             ))
 
+;; helpers
+(defn- validate-registration [db username password]
+  (let [user_exists (get-user-by-name db username)]
+    (not (or user_exists (empty? username) (empty? password)))))
+
 ;; API
 (defn get-user-by-name [db username]
   (db/get-user-by-name db username))
 (defn get-user-by-id [db user_id]
   (db/get-user-by-id db user_id))
-
 (defn get-all-posts [db]
   (db/get-all-posts db))
+(defn create-user [db username password]
+  (db/create-user db username (bh/derive password)))
+
+;; AUTH
 
 (defn authenticate-user [db username password]
   (let [user (get-user-by-name db username)]
     (bh/check password (:hash user))))
 
-;; AUTH
 (defn access-error [request value]
   (unauthorized value))
 
@@ -68,9 +75,20 @@
             (assoc-in (ok {}) [:session :identity] {:username (:username user)}))
           (do
             (log/info "login failed!")
-            (assoc-in (forbidden {}) [:session :identity] nil)))
-        )
-      )
+            (assoc-in (forbidden {}) [:session :identity] nil)))))
+
+    (POST "/register" []
+      :summary "registers a new user"
+      :body-params [username :- s/Str, password :- s/Str]
+      (log/info "some tried to register! (" username ":" password ")")
+      (if (validate-registration db username password)
+        (do
+          (log/info "login success!")
+          (create-user db username password)
+          (assoc-in (ok {}) [:session :identity] {:username username}))
+        (do
+          (log/info "login failed!")
+          (assoc-in (forbidden {}) [:session :identity] nil))))
 
     (GET "/get-user-by-name" []
       :auth-rules authenticated?
