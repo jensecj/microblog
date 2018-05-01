@@ -7,4 +7,6 @@
 
   (get-user-by-name [this username] "get a user record by username")
   (get-user-by-id [this user_id] "get a user record by user_id")
+
+  (create-user [this username hash] "add a new user to the database")
   )
