@@ -4,11 +4,13 @@
             [reagent.core :as reagent]
             [frontend.views.login]
             [frontend.views.timeline]
+            [frontend.views.register]
             ))
 
 (defmulti pages identity)
-(defmethod pages :login [] [(frontend.views.login/login-page)])
+(defmethod pages :login    [] [(frontend.views.login/login-page)])
 (defmethod pages :timeline [] [(frontend.views.timeline/timeline-page)])
+(defmethod pages :register [] [(frontend.views.register/register-page)])
 
 (defn show-page
   [page-name]

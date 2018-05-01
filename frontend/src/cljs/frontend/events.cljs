@@ -2,6 +2,7 @@
   (:require [re-frame.core :as re-frame]
             [frontend.db :as db]
             [frontend.events.login]
+            [frontend.events.register]
             [frontend.events.timeline]
             ))
 
