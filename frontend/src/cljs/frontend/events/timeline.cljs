@@ -10,7 +10,7 @@
  (fn [_ _]
    {:http-xhrio {:method :get
                  :uri (str "http://localhost:3000/api/all-posts")
-                 :timeout 5000
+                 :timeout 2000
                  :response-format (ajax/json-response-format {:keywords? true})
                  :on-success [:timeline/get-all-posts-success]
                  :on-failure [:request-failure]}

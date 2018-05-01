@@ -15,7 +15,6 @@
   (pages page-name))
 
 (defn main-page []
-  (let [active-page (re-frame/subscribe [:active-page])
-        name (re-frame/subscribe [:name])]
+  (let [active-page (re-frame/subscribe [:active-page])]
     (fn []
       [:div (show-page @active-page)])))

@@ -7,9 +7,9 @@
    (:active-page db)))
 
 (re-frame/reg-sub
- :name
+ :user
  (fn [db]
-   (:name db)))
+   (:user db)))
 
 (re-frame/reg-sub
  :posts

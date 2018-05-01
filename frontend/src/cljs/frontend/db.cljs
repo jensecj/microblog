@@ -1,5 +1,5 @@
 (ns frontend.db)
 
 (def default-db
-  {:name "anonymous"
+  {:user nil
    :active-page :login})
