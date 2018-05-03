@@ -1,23 +1,21 @@
 (ns backend.api
   (:require [environ.core :refer [env]]
+            [taoensso.timbre :as log]
+            [schema.core :as s]
             [compojure.api.sweet :refer :all]
-            [backend.db :refer [Database Post User]]
-            [backend.dbprotocol :as db]
             [ring.util.http-response :refer :all]
             [compojure.api.meta :refer [restructure-param]]
             [ring.middleware.cors :refer [wrap-cors]]
-            [taoensso.timbre :as log]
             [buddy.auth :as ba]
             [buddy.auth.backends.session :as session]
             [buddy.auth.middleware :as bam]
             [buddy.hashers :as bh]
             [buddy.auth.accessrules :as baa]
-            ))
 
-;; helpers
-(defn- validate-registration [db username password]
-  (let [user_exists (get-user-by-name db username)]
-    (not (or user_exists (empty? username) (empty? password)))))
+            [backend.db :refer [Database]]
+            [backend.schema :refer [Post User]]
+            [backend.dbprotocol :as db]
+            ))
 
 ;; API
 (defn get-user-by-name [db username]
@@ -29,8 +27,12 @@
 (defn create-user [db username password]
   (db/create-user db username (bh/derive password)))
 
-;; AUTH
+;; helpers
+(defn- validate-registration [db username password]
+  (let [user_exists (get-user-by-name db username)]
+    (not (or user_exists (empty? username) (empty? password)))))
 
+;; AUTH
 (defn authenticate-user [db username password]
   (let [user (get-user-by-name db username)]
     (bh/check password (:hash user))))
@@ -57,8 +59,7 @@
 (defn authenticated? [req]
   (ba/authenticated? req))
 
-;; HANDLER
-
+;; ROUTES
 (defn- api-routes [db]
   (context "/api" []
     :tags ["api"]

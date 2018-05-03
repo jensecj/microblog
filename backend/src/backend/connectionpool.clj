@@ -1,8 +1,9 @@
 (ns backend.connectionpool
   (:require [environ.core :refer [env]]
             [mount.core :refer [defstate]]
+            [taoensso.timbre :as log]
             [hikari-cp.core :refer :all]
-            [taoensso.timbre :as log]))
+            ))
 
 (def spec
   {:classname "org.postgresql.Driver"

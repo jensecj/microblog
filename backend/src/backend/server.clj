@@ -1,19 +1,22 @@
 (ns backend.server
   (:gen-class)
   (:require [environ.core :refer [env]]
-            [backend.db :refer [Database Post User]]
-            [backend.dbprotocol :as db]
             [mount.core :as mount :refer [defstate]]
             [taoensso.timbre :as log]
-            [backend.api :as api]
             [ring.middleware.session :as rms]
             [ring.util.http-response :as response]
             [compojure.api.meta :refer [restructure-param]]
+            [org.httpkit.server :as serv]
             [buddy.auth :as ba]
             [buddy.auth.accessrules :as baa]
             [buddy.auth.backends.session :as session]
             [buddy.auth.middleware :as bam]
             [buddy.hashers :as bh]
+
+            [backend.api :as api]
+            [backend.schema :refer [Post User]]
+            [backend.db :refer [Database]]
+            [backend.dbprotocol :as db]
             ))
 
 (def config {:host (env :microblog-api-url)
