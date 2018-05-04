@@ -17,16 +17,6 @@
             [backend.dbprotocol :as db]
             ))
 
-;; API
-(defn get-user-by-name [db username]
-  (db/get-user-by-name db username))
-(defn get-user-by-id [db user_id]
-  (db/get-user-by-id db user_id))
-(defn get-all-posts [db]
-  (db/get-all-posts db))
-(defn create-user [db username password]
-  (db/create-user db username (bh/derive password)))
-
 ;; helpers
 (defn- validate-registration [db username password]
   (let [user_exists (get-user-by-name db username)]
@@ -59,70 +49,77 @@
 (defn authenticated? [req]
   (ba/authenticated? req))
 
+(defn- auth-routes [db]
+  (routes
+   (POST "/login" []
+     :summary "logs a user in"
+     :body-params [username :- s/Str, password :- s/Str]
+     (let [user (get-user-by-name db username)]
+       (log/info "some tried to login! (" username "," password ")")
+
+       (if (authenticate-user db username password)
+         (do
+           (log/info "login success!")
+           (assoc-in (ok {}) [:session :identity] {:username (:username user)}))
+         (do
+           (log/info "login failed!")
+           (assoc-in (forbidden {}) [:session :identity] nil)))))
+
+   (POST "/register" []
+     :summary "registers a new user"
+     :body-params [username :- s/Str, password :- s/Str]
+     (log/info "some tried to register! (" username ":" password ")")
+     (if (validate-registration db username password)
+       (do
+         (log/info "login success!")
+         (db/create-user db username (bh/derive password))
+         (assoc-in (ok {}) [:session :identity] {:username username}))
+       (do
+         (log/info "login failed!")
+         (assoc-in (forbidden {}) [:session :identity] nil))))))
+
+(defn- user-routes [db]
+  (routes
+   (GET "/get-user-by-name" []
+     :auth-rules authenticated?
+     :summary "Get a users record by username"
+     :return {:result User}
+     :query-params [username :- s/Str]
+     (ok {:result (db/get-user-by-name db username)}))
+   (GET "/get-user-by-id" []
+     :auth-rules authenticated?
+     :summary "Get a users record by user id"
+     :return {:result User}
+     :query-params [user_id :- s/Int]
+     (ok {:result (db/get-user-by-id db user_id)}))))
+
+(defn- post-routes [db]
+  (routes
+   (POST "/new-post" []
+     :auth-rules authenticated?
+     :summary "Add a new post"
+     :body-params [post :- s/Str]
+     :current-user user
+     (db/add-post db user post))
+   (GET "/all-posts" []
+     :auth-rules authenticated?
+     :summary "Get all available posts"
+     :return {:result [Post]}
+     (ok {:result (db/get-all-posts db)}))
+   (GET "/posts-by-offset" []
+     :auth-rules authenticated?
+     :summary "Get n posts, starting at offset"
+     :query-params [num_posts :- s/Int, offset :- s/Int]
+     :return {:result [Post]}
+     (ok {:result (db/get-posts-by-offset db num_posts offset)}))))
+
 ;; ROUTES
 (defn- api-routes [db]
   (context "/api" []
     :tags ["api"]
-
-    (POST "/login" []
-      :summary "logs a user in"
-      :body-params [username :- s/Str, password :- s/Str]
-      (let [user (get-user-by-name db username)]
-        (log/info "some tried to login! (" username "," password ")")
-
-        (if (authenticate-user db username password)
-          (do
-            (log/info "login success!")
-            (assoc-in (ok {}) [:session :identity] {:username (:username user)}))
-          (do
-            (log/info "login failed!")
-            (assoc-in (forbidden {}) [:session :identity] nil)))))
-
-    (POST "/register" []
-      :summary "registers a new user"
-      :body-params [username :- s/Str, password :- s/Str]
-      (log/info "some tried to register! (" username ":" password ")")
-      (if (validate-registration db username password)
-        (do
-          (log/info "login success!")
-          (create-user db username password)
-          (assoc-in (ok {}) [:session :identity] {:username username}))
-        (do
-          (log/info "login failed!")
-          (assoc-in (forbidden {}) [:session :identity] nil))))
-
-    (GET "/get-user-by-name" []
-      :auth-rules authenticated?
-      :summary "Get a users record by username"
-      :return {:result User}
-      :query-params [username :- s/Str]
-      (ok {:result (get-user-by-name db username)}))
-    (GET "/get-user-by-id" []
-      :auth-rules authenticated?
-      :summary "Get a users record by user id"
-      :return {:result User}
-      :query-params [user_id :- s/Int]
-      (ok {:result (get-user-by-id db user_id)}))
-
-    (POST "/new-post" []
-      :auth-rules authenticated?
-      :summary "Add a new post"
-      :body-params [post :- s/Str]
-      :current-user user
-      (db/add-post db user post))
-    (GET "/all-posts" []
-      :summary "Get all available posts"
-      :return {:result [Post]}
-      :auth-rules authenticated?
-      (ok {:result (get-all-posts db)}))
-    (GET "/posts-by-offset" []
-      :auth-rules authenticated?
-      :summary "Get n posts, starting at offset"
-      :query-params [num_posts :- s/Int, offset :- s/Int]
-      :return {:result [Post]}
-      (ok {:result (db/get-posts-by-offset db num_posts offset)}))
-
-    ))
+    (auth-routes db)
+    (user-routes db)
+    (post-routes db)))
 
 (defn- app [db]
   (api
