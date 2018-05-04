@@ -56,7 +56,8 @@
   )
 
 (defn wrap-get-posts-by-offset [connection n offset]
-  (sql-get-posts-by-offset connection n offset))
+  (let [raw-posts (sql-get-posts-by-offset connection n offset)]
+    (map (partial wrap-post connection) raw-posts)))
 (defn wrap-get-user-by-name [connection username]
   (->
    (sql-get-user-by-name connection username)
@@ -83,8 +84,7 @@
   (get-user-by-id [this user_id]
     (wrap-get-user-by-id connection user_id))
   (create-user [this username hash]
-    (wrap-create-user connection username hash))
-  )
+    (wrap-create-user connection username hash)))
 
 (defstate Database
   :start (do
