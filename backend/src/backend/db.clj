@@ -23,14 +23,10 @@
   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"])))
 
 (defn- change-post-created-by-id-to-name [connection user post]
-  (let [user_id (:id user)
-        username (:username user)]
-    (-> post
-        (dissoc :created_by)
-        (assoc :created_by username))))
+  (assoc post :created_by (:username user)))
 
 (defn- add-creator-avatar [connection user post]
-  (let [avatar (:username use)]
+  (let [avatar ()]
     (assoc post :creator_avatar
            (rand-nth '("http://www.avatarsdb.com/avatars/hidden_cat.jpg"
                        "http://www.avatarsdb.com/avatars/dennis.jpg"

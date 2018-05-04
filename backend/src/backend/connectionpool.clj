@@ -2,8 +2,7 @@
   (:require [environ.core :refer [env]]
             [mount.core :refer [defstate]]
             [taoensso.timbre :as log]
-            [hikari-cp.core :refer :all]
-            ))
+            [hikari-cp.core :refer :all]))
 
 (def spec
   {:classname "org.postgresql.Driver"

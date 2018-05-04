@@ -12,6 +12,7 @@
      :db            connection})
 
   (log/info "handling database migrations")
+
   ;; migratus will automatically apply any migrations that have
   ;; not yet been applied, it skips all others.
   (migratus/migrate config))
