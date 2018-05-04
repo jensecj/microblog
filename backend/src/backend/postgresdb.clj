@@ -22,51 +22,61 @@
 
 
 ;; helpers for request wrappers
-(defn- change-post-created-by-id-to-name [connection user post]
-  (assoc post :created_by (:username user)))
+(def fake-avatar-list
+  ["http://www.avatarsdb.com/avatars/funny_penguin.gif"
+   "http://www.avatarsdb.com/avatars/alias_bad_robot.gif"
+   "http://www.avatarsdb.com/avatars/funny_confused_frog.gif"
+   "http://www.avatarsdb.com/avatars/hidden_cat.jpg"
+   "http://www.avatarsdb.com/avatars/dennis.jpg"
+   "http://www.avatarsdb.com/avatars/playful_cat.gif"])
 
-(defn- add-creator-avatar [connection user post]
-  (let [avatar ()]
-    (assoc post :creator_avatar
-           (rand-nth '("http://www.avatarsdb.com/avatars/hidden_cat.jpg"
-                       "http://www.avatarsdb.com/avatars/dennis.jpg"
-                       "http://www.avatarsdb.com/avatars/funny_penguin.gif"
-                       "http://www.avatarsdb.com/avatars/playful_cat.gif")))))
+(defn random-avatar [user_id]
+  (nth fake-avatar-list (- user_id 1)))
 
+(defn add-avatar-url [user]
+  (assoc user :avatar_url (random-avatar (:id user))))
 
 ;; wrappers for incoming requests
-(defn- wrap-post [connection post]
-  (let [user (sql-get-user-by-id connection (:created_by post))]
-    (->> post
-         (change-post-created-by-id-to-name connection user)
-         (add-creator-avatar connection user))))
-
-(defn- wrap-get-all-posts [connection]
-  (let [raw-posts (sql-get-all-posts connection)]
-    (map (partial wrap-post connection) raw-posts)))
-
-(defn- wrap-get-posts-by-offset [connection n offset]
-  (let [raw-posts (sql-get-posts-by-offset connection n offset)]
-    (map (partial wrap-post connection) raw-posts)))
-
-(defn- wrap-get-user-by-name [connection username]
+(defn- wrap-get-user-by-name
+  "Get a user by their name"
+  [connection username]
   (some-> (sql-get-user-by-name connection username)
-      (assoc :avatar_url "")))
+          (add-avatar-url)))
 
-(defn- wrap-get-user-by-id [connection user_id]
+(defn- wrap-get-user-by-id
+  "Get a user by their ID"
+  [connection user_id]
   (some-> (sql-get-user-by-id connection user_id)
-      (assoc :avatar_url "")))
+          (add-avatar-url)))
 
 (defn- wrap-create-user [connection username hash]
   (sql-create-user connection username hash))
 
-(defn- wrap-add-post [connection current-user new-post]
+(defn- wrap-post [connection post]
+  (let [user (wrap-get-user-by-id connection (:created_by post))]
+    (assoc post :created_by (dissoc user :hash))))
+
+(defn- wrap-get-all-posts
+  "Get all available posts"
+  [connection]
+  (let [raw-posts (sql-get-all-posts connection)]
+    (map (partial wrap-post connection) raw-posts)))
+
+(defn- wrap-get-posts-by-offset
+  "Get n posts, starting at offset"
+  [connection n offset]
+  (let [raw-posts (sql-get-posts-by-offset connection n offset)]
+    (map (partial wrap-post connection) raw-posts)))
+
+(defn- wrap-add-post
+  "Validate that the incoming post conforms to spec, then attempt to create it."
+  [connection current-user new-post]
   (let [validation (schema/check (schema/pred s/post-body?) new-post)]
     (if (= validation nil)
       (let [user (wrap-get-user-by-name connection (:username current-user))]
         (sql-add-post connection user new-post)))))
 
-(defrecord PostgreSQL-DB [connection]
+(defrecord PostgresDb [connection]
   dbprotocol/PostActions
   (add-post [this user new-post]
     (wrap-add-post connection user new-post))

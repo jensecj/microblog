@@ -22,5 +22,5 @@
 
            ;; construct the component that is going to be returned, this is what
            ;; is injected when ':refer [Database]' is used.
-           (postgres/->PostgreSQL-DB ConnectionPool))
+           (postgres/->PostgresDb ConnectionPool))
   :stop (log/info "stopping database component"))

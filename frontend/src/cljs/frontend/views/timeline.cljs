@@ -23,11 +23,11 @@
            [:div {:class "post card-body"}
             [:div {:class "row"}
              [:div {:class "col-3"}
-              [:img {:src (:creator_avatar post) :width 100 :height 100 :class ""}]]
+              [:img {:src (:avatar_url (:created_by post)) :width 100 :height 100 :class ""}]]
              [:div {:class "col-9 pr-1"}
               [:div {:class "card-title d-flex w-80 justify-content-between" :height 30}
                [:a {:href (str "#" (:id post)) }
-                [:h4 {:class "card-title text-muted"} (str "@" (:created_by post))]]
+                [:h4 {:class "card-title text-muted"} (str "@" (:username (:created_by post)))]]
                [:small {:class "text-muted"} (subs (:created_at post) 0 10)]
                ]
               [:p {:class "card-text"} (:body post)]
