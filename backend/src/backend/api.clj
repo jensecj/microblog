@@ -49,6 +49,19 @@
 (defn authenticated? [req]
   (ba/authenticated? req))
 
+
+;; handlers for database calls
+(defn handle-get-user-by-id [db user_id]
+  (let [user (db/get-user-by-id db user_id)]
+    (if user
+      (ok {:result user})
+      (not-found "user not found"))))
+(defn handle-get-user-by-name [db username]
+  (let [user (db/get-user-by-name db username)]
+    (if user
+      (ok {:result user})
+      (not-found "user not found"))))
+
 (defn- auth-routes [db]
   (routes
    (POST "/login" []
@@ -85,13 +98,13 @@
      :summary "Get a users record by username"
      :return {:result User}
      :query-params [username :- s/Str]
-     (ok {:result (db/get-user-by-name db username)}))
+     (handle-get-user-by-name db username))
    (GET "/get-user-by-id" []
      :auth-rules authenticated?
      :summary "Get a users record by user id"
      :return {:result User}
      :query-params [user_id :- s/Int]
-     (ok {:result (db/get-user-by-id db user_id)}))))
+     (handle-get-user-by-id db user_id))))
 
 (defn- post-routes [db]
   (routes

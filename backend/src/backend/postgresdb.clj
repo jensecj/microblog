@@ -50,11 +50,11 @@
     (map (partial wrap-post connection) raw-posts)))
 
 (defn- wrap-get-user-by-name [connection username]
-  (-> (sql-get-user-by-name connection username)
+  (some-> (sql-get-user-by-name connection username)
       (assoc :avatar_url "")))
 
 (defn- wrap-get-user-by-id [connection user_id]
-  (-> (sql-get-user-by-id connection user_id)
+  (some-> (sql-get-user-by-id connection user_id)
       (assoc :avatar_url "")))
 
 (defn- wrap-create-user [connection username hash]
