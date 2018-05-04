@@ -25,4 +25,4 @@
   {:id s/Int
    :username s/Str
    :hash s/Str
-   :avatar-url s/Str})
+   :avatar_url s/Str})
