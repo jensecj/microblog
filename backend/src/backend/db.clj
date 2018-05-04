@@ -6,6 +6,7 @@
             [migratus.core :as migratus]
             [hugsql.core :as hugsql]
             [backend.schema :as s]
+            [schema.core :as schema]
             [taoensso.timbre :as log]
             [backend.dbmigrations :as dbm]))
 
@@ -43,14 +44,11 @@
   (let [raw-posts (sql-get-all-posts connection)]
     (map (partial wrap-post connection) raw-posts)))
 
-(defn wrap-add-post [connection user new-post]
-  (sql-add-post connection user new-post)
-  ;; (let [validation (s/check (s/pred post-body?) new-post)]
-  ;;   (if (= validation nil)
-  ;;     (let [user (sql-get-user-by-name connection (:username user))]
-  ;;       )))
-  )
-
+(defn wrap-add-post [connection current-user new-post]
+  (let [validation (schema/check (schema/pred s/post-body?) new-post)]
+    (if (= validation nil)
+      (let [user (wrap-get-user-by-name connection (:username current-user))]
+        (sql-add-post connection user new-post)))))
 (defn wrap-get-posts-by-offset [connection n offset]
   (let [raw-posts (sql-get-posts-by-offset connection n offset)]
     (map (partial wrap-post connection) raw-posts)))
