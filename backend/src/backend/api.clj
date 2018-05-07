@@ -18,17 +18,29 @@
             ))
 
 ;; helpers
-(defn- validate-registration [db username password]
+(defn- validate-registration
+  "Validate a registration attempt. requirements:
+  * the username and password fields are non-empty.
+  * the user does not already exist."
+  [db username password]
   (let [user_exists (db/get-user-by-name db username)]
-    (not (or user_exists (empty? username) (empty? password)))))
+    (and (not user_exists)
+         (not (empty? username))
+         (not (empty? password)))))
 
-;; AUTH
-(defn authenticate-user [db username password]
+(defn- validate-login
+  "Validate a login attempt. requirements:
+  * user exists
+  * hash of password matches the stored hash for the user"
+  [db username password]
   (let [user (db/get-user-by-name db username)]
+    ;; if the user does not exist, (:hash user) will return nil,
+    ;; and bh/check will fail.
     (bh/check password (:hash user))))
 
-(defn access-error [request value]
-  (unauthorized value))
+;; AUTH
+(defn access-error [request value] (unauthorized value))
+(defn authenticated? [req] (ba/authenticated? req))
 
 (defn wrap-rule [handler rule]
   (-> handler
@@ -45,9 +57,6 @@
 (defmethod restructure-param :current-user
   [_ binding acc]
   (update-in acc [:letks] into [binding `(:identity ~'+compojure-api-request+)]))
-
-(defn authenticated? [req]
-  (ba/authenticated? req))
 
 
 ;; handlers for database calls
@@ -67,16 +76,14 @@
    (POST "/login" []
      :summary "logs a user in"
      :body-params [username :- s/Str, password :- s/Str]
-     (let [user (handle-get-user-by-name db username)]
-       (log/info "some tried to login! (" username "," password ")")
-
-       (if (authenticate-user db username password)
-         (do
-           (log/info "login success!")
-           (assoc-in (ok {}) [:session :identity] {:username (:username user)}))
-         (do
-           (log/info "login failed!")
-           (assoc-in (forbidden {}) [:session :identity] nil)))))
+     (log/info "some tried to login! (" username "," password ")")
+     (if (validate-login db username password)
+       (do
+         (log/info "login success!")
+         (assoc-in (ok {}) [:session :identity] {:username username}))
+       (do
+         (log/info "login failed!")
+         (assoc-in (forbidden {}) [:session :identity] nil))))
 
    (POST "/register" []
      :summary "registers a new user"
