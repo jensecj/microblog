@@ -18,7 +18,10 @@
             [backend.schema :refer [Post User]]
             ))
 
-;; helpers
+;;;;;;;;;;;;;
+;; HELPERS ;;
+;;;;;;;;;;;;;
+
 (defn- validate-registration
   "Validate a registration attempt. requirements:
   * the username and password fields are non-empty.
@@ -39,7 +42,11 @@
     ;; and bh/check will fail.
     (bh/check password (:hash user))))
 
-;; handlers for database calls
+
+;;;;;;;;;;;;;;
+;; HANDLERS ;;
+;;;;;;;;;;;;;;
+
 (defn handle-get-user-by-id [db user_id]
   (let [user (db/get-user-by-id db user_id)]
     (if user
@@ -50,6 +57,11 @@
     (if user
       (ok {:result user})
       (not-found "user not found"))))
+
+
+;;;;;;;;;;;;
+;; ROUTES ;;
+;;;;;;;;;;;;
 
 (defn- auth-routes [db]
   (routes
@@ -113,7 +125,6 @@
      :return {:result [Post]}
      (ok {:result (db/get-posts-by-offset db num_posts offset)}))))
 
-;; ROUTES
 (defn- api-routes [db]
   (context "/api" []
     :tags ["api"]

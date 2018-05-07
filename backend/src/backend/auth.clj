@@ -7,8 +7,15 @@
    [buddy.auth.accessrules :as baa]
    ))
 
-(defn authenticated? [req] (ba/authenticated? req))
-(defn access-error [request value] (unauthorized value))
+(defn authenticated?
+  "Handle auth requests."
+  [req]
+  ;; could add custom authentication logic if needed, but for now, just delegate
+  ;; to buddy.
+  (ba/authenticated? req))
+
+(defn access-error [request value]
+  (unauthorized value))
 
 (defn wrap-rule [handler rule]
   (-> handler

@@ -4,9 +4,10 @@
             [taoensso.timbre :as log]
 
             [backend.schema :as s]
-            [backend.dbprotocol :as dbprotocol]))
+            [backend.dbprotocol :as dbprotocol]
+            ))
 
-;; SQL queries
+;; SQL queries, TODO: replace with hugsql
 (defn- sql-get-posts-by-offset [connection n offset]
   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
 (defn- sql-get-user-by-name [connection username]

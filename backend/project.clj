@@ -37,5 +37,4 @@
   :jvm-opts ["-Xmx1g"]
   :target-path "target/%s"
   :uberjar-name "microblog-backend-standalone.jar"
-  :profiles {:uberjar {:aot :all}}
-  )
+  :profiles {:uberjar {:aot :all}})
