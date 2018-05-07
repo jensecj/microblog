@@ -19,12 +19,12 @@
 
 ;; helpers
 (defn- validate-registration [db username password]
-  (let [user_exists (get-user-by-name db username)]
+  (let [user_exists (db/get-user-by-name db username)]
     (not (or user_exists (empty? username) (empty? password)))))
 
 ;; AUTH
 (defn authenticate-user [db username password]
-  (let [user (get-user-by-name db username)]
+  (let [user (db/get-user-by-name db username)]
     (bh/check password (:hash user))))
 
 (defn access-error [request value]
@@ -67,7 +67,7 @@
    (POST "/login" []
      :summary "logs a user in"
      :body-params [username :- s/Str, password :- s/Str]
-     (let [user (get-user-by-name db username)]
+     (let [user (handle-get-user-by-name db username)]
        (log/info "some tried to login! (" username "," password ")")
 
        (if (authenticate-user db username password)
