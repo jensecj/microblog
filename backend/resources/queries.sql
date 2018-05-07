@@ -38,3 +38,8 @@ SELECT *
 SELECT *
   FROM users
  WHERE id = :id
+
+-- :name create-user :!
+-- :doc Create a new user
+INSERT INTO users (username, hash)
+VALUES (:username, :hash)

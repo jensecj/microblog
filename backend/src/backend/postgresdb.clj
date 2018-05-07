@@ -8,27 +8,9 @@
             [backend.dbprotocol :as dbprotocol]
             ))
 
-;; SQL queries, TODO: replace with hugsql
-;; (defn- sql-get-all-posts [connection]
-;;   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"])))
-;; (defn- sql-get-posts-by-offset [connection n offset]
-;;   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
-
-;; (defn- sql-get-user-by-name [connection username]
-;;   (first (db/query connection ["SELECT username,hash,id FROM users WHERE username = ?" username])))
-;; (defn- sql-get-user-by-id [connection user_id]
-;;   (first (db/query connection ["SELECT username,hash,id FROM users WHERE id = ?" user_id])))
-
-(defn sql-create-user [connection username hash]
-  (db/insert! connection :users {:username username :hash hash}))
-(defn- sql-add-post [connection user new-post]
-  (db/insert! connection :posts {:created_by (:id user) :body new-post}))
-
 ;; import queries as clojure code into this namespace, based on
 ;; the SQL from queries.sql
 (hugsql/def-db-fns "queries.sql")
-
-
 
 ;; helpers for request wrappers
 (def fake-avatar-list
@@ -59,7 +41,7 @@
           (add-avatar-url)))
 
 (defn- wrap-create-user [connection username hash]
-  (sql-create-user connection username hash))
+  (create-user connection {:username username :hahs hash}))
 
 (defn- wrap-post [connection post]
   (let [user (wrap-get-user-by-id connection (:created_by post))]
@@ -83,7 +65,7 @@
   (let [validation (schema/check (schema/pred s/post-body?) new-post)]
     (if (= validation nil)
       (let [user (wrap-get-user-by-name connection (:username current-user))]
-        (sql-add-post connection user new-post)))))
+        (add-post connection {:created_by (:id user) :body new-post})))))
 
 (defrecord PostgresDb [connection]
   dbprotocol/PostActions
