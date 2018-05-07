@@ -2,24 +2,32 @@
   (:require [clojure.java.jdbc :as db]
             [schema.core :as schema]
             [taoensso.timbre :as log]
+            [hugsql.core :as hugsql]
 
             [backend.schema :as s]
             [backend.dbprotocol :as dbprotocol]
             ))
 
 ;; SQL queries, TODO: replace with hugsql
-(defn- sql-get-posts-by-offset [connection n offset]
-  (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
-(defn- sql-get-user-by-name [connection username]
-  (first (db/query connection ["SELECT username,hash,id FROM users WHERE username = ?" username])))
-(defn- sql-get-user-by-id [connection user_id]
-  (first (db/query connection ["SELECT username,hash,id FROM users WHERE id = ?" user_id])))
+;; (defn- sql-get-all-posts [connection]
+;;   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"])))
+;; (defn- sql-get-posts-by-offset [connection n offset]
+;;   (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC OFFSET ? LIMIT ?" (* offset n) n])))
+
+;; (defn- sql-get-user-by-name [connection username]
+;;   (first (db/query connection ["SELECT username,hash,id FROM users WHERE username = ?" username])))
+;; (defn- sql-get-user-by-id [connection user_id]
+;;   (first (db/query connection ["SELECT username,hash,id FROM users WHERE id = ?" user_id])))
+
 (defn sql-create-user [connection username hash]
   (db/insert! connection :users {:username username :hash hash}))
 (defn- sql-add-post [connection user new-post]
   (db/insert! connection :posts {:created_by (:id user) :body new-post}))
-(defn- sql-get-all-posts [connection]
-  (into [] (db/query connection ["SELECT * FROM posts ORDER BY ID DESC"])))
+
+;; import queries as clojure code into this namespace, based on
+;; the SQL from queries.sql
+(hugsql/def-db-fns "queries.sql")
+
 
 
 ;; helpers for request wrappers
@@ -41,13 +49,13 @@
 (defn- wrap-get-user-by-name
   "Get a user by their name"
   [connection username]
-  (some-> (sql-get-user-by-name connection username)
+  (some-> (get-user-by-name connection {:username username})
           (add-avatar-url)))
 
 (defn- wrap-get-user-by-id
   "Get a user by their ID"
   [connection user_id]
-  (some-> (sql-get-user-by-id connection user_id)
+  (some-> (get-user-by-id connection {:id user_id})
           (add-avatar-url)))
 
 (defn- wrap-create-user [connection username hash]
@@ -60,13 +68,13 @@
 (defn- wrap-get-all-posts
   "Get all available posts"
   [connection]
-  (let [raw-posts (sql-get-all-posts connection)]
+  (let [raw-posts (get-all-posts connection)]
     (map (partial wrap-post connection) raw-posts)))
 
 (defn- wrap-get-posts-by-offset
   "Get n posts, starting at offset"
   [connection n offset]
-  (let [raw-posts (sql-get-posts-by-offset connection n offset)]
+  (let [raw-posts (get-posts-by-offset connection {:n n :offset offset})]
     (map (partial wrap-post connection) raw-posts)))
 
 (defn- wrap-add-post
