@@ -1,6 +1,7 @@
 (ns frontend.views.timeline
   (:require [re-frame.core :as re-frame :refer [dispatch]]
-            [reagent.core :as reagent]))
+            [reagent.core :as reagent]
+            [frontend.views.common :as common]))
 
 (defn- blog-form []
   (let [text (reagent/atom "")]
@@ -28,17 +29,15 @@
               [:div {:class "card-title d-flex w-80 justify-content-between" :height 30}
                [:a {:href (str "#" (:id post)) }
                 [:h4 {:class "card-title text-muted"} (str "@" (:username (:created_by post)))]]
-               [:small {:class "text-muted"} (subs (:created_at post) 0 10)]
-               ]
+               [:small {:class "text-muted"} (subs (:created_at post) 0 10)]]
               [:p {:class "card-text"} (:body post)]
               [:a {:href "#" :class "card-link float-right"} "like"]]]]])
         posts)])))
 
 (defn timeline-page []
-  (let [;name (re-frame/subscribe [:name])
+  (let [username (re-frame/subscribe [:username])
         all-posts (re-frame/subscribe [:posts])]
     (fn []
-      [:div {:class "container mt-5"}
+      [:div {:cxlass "container mt-5"}
        [(blog-form)]
-       [(posts @all-posts)]
-       ])))
+       [(posts @all-posts)]])))
