@@ -12,6 +12,11 @@
    (:user db)))
 
 (re-frame/reg-sub
+ :username
+ (fn [db]
+   (:username db)))
+
+(re-frame/reg-sub
  :posts
  (fn [db _]
    (:posts db)))
