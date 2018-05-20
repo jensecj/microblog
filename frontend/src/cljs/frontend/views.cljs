@@ -5,6 +5,7 @@
             [frontend.views.login]
             [frontend.views.timeline]
             [frontend.views.register]
+            [frontend.views.common :as common]
             ))
 
 (defmulti pages identity)
@@ -19,4 +20,9 @@
 (defn main-page []
   (let [active-page (re-frame/subscribe [:active-page])]
     (fn []
-      [:div (show-page @active-page)])))
+      [:div
+       [(common/header "jens")]
+       [:hr]
+       [:div
+        (show-page @active-page)]
+       [(common/footer)]])))
