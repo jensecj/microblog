@@ -3,8 +3,7 @@
             [frontend.db :as db]
             [frontend.events.login]
             [frontend.events.register]
-            [frontend.events.timeline]
-            ))
+            [frontend.events.timeline]))
 
 (re-frame/reg-event-db
  ::initialize-db
