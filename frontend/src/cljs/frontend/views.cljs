@@ -5,6 +5,8 @@
             [frontend.views.login]
             [frontend.views.timeline]
             [frontend.views.register]
+            [frontend.views.settings]
+            [frontend.views.user]
             [frontend.views.common :as common]
             ))
 
@@ -12,6 +14,8 @@
 (defmethod pages :login    [] [(frontend.views.login/login-page)])
 (defmethod pages :timeline [] [(frontend.views.timeline/timeline-page)])
 (defmethod pages :register [] [(frontend.views.register/register-page)])
+(defmethod pages :settings [] [(frontend.views.settings/settings-page)])
+(defmethod pages :user [] [(frontend.views.user/user-page)])
 
 (defn show-page
   [page-name]
